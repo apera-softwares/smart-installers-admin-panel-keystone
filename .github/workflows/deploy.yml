@@ -1,0 +1,51 @@
+name: Node Project `NY Installer` CI With Docker and ssdnode
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  docker-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+            context: .
+            push: true
+            tags: aperrasolutions/smart-installers-keystonejs:latest
+
+  build-and-deploy:
+    needs: docker-setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing ssh in SSDNODE
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSDNODE_HOST }}
+          username: ${{ secrets.SSDNODE_USERNAME }}
+          password: ${{ secrets.SSDNODE_PASSWORD }}
+          script: |
+            sudo docker stop smart-installers-keystonejs || true
+            sudo docker rm smart-installers-keystonejs || true
+            sudo docker image rm aperrasolutions/smart-installers-keystonejs:latest || true
+            sudo docker run --name smart-installers-keystonejs -d -p 8000:8000 \
+              -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+              -e PORT=${{ secrets.PORT }} \
+              -e SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
+              -e SESSION_MAX_AGE=${{ secrets.SESSION_MAX_AGE }} \
+              aperrasolutions/smart-installers-keystonejs:latest
