@@ -43,7 +43,7 @@ jobs:
             sudo docker stop smart-installers-keystonejs || true
             sudo docker rm smart-installers-keystonejs || true
             sudo docker image rm aperrasolutions/smart-installers-keystonejs:latest || true
-            sudo docker run --name smart-installers-keystonejs -d -p 8000:8000 \
+            sudo docker run --name smart-installers-keystonejs -d -p 3202:3000 \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
               -e PORT=${{ secrets.PORT }} \
               -e SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
