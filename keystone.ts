@@ -38,7 +38,7 @@ export default withAuth(
       local_images: {
         kind: "local",
         type: "image",
-        generateUrl: (path) => `http://209.182.232.11:3202/images${path}`,
+        generateUrl: (path) => `${process.env.IMAGE_URL}${path}`,
         serverRoute: {
           path: "/images",
         },

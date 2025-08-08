@@ -46,6 +46,8 @@ jobs:
             sudo docker run --name smart-installers-keystonejs -d -p 3202:3000 \
               -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
               -e PORT=${{ secrets.PORT }} \
+              -e IMAGE_URL=${{ secrets.IMAGE_URL }} \
               -e SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
               -e SESSION_MAX_AGE=${{ secrets.SESSION_MAX_AGE }} \
+              -v smart-installers-media:/app/public/images \
               aperrasolutions/smart-installers-keystonejs:latest
